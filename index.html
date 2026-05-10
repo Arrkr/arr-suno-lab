@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#070707">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ARR SUNO">
+<title>ARR SUNO LAB</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --a:#C8845A;--a2:#7A4E30;
+  --bg:#070707;--bg2:#0D0D0D;--bg3:#111;
+  --bd:#1D1D1D;--bd2:#252525;
+  --t:#C0BDB5;--t2:#555;--t3:#333;
+  --w:#EEEAE2;--r:3px;
+  --font:'Courier New','Lucida Console',monospace;
+}
+body{background:var(--bg);color:var(--t);font-family:var(--font);min-height:100vh;min-height:100dvh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.screen{display:none;min-height:100vh;min-height:100dvh;flex-direction:column}
+.screen.active{display:flex}
+.setup-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:24px}
+.setup-box{width:100%;max-width:400px;border:1px solid var(--bd);border-radius:var(--r);overflow:hidden}
+.setup-head{background:var(--bg3);padding:24px;border-bottom:1px solid var(--bd)}
+.setup-body{padding:24px;background:var(--bg2)}
+.hdr{border-bottom:1px solid var(--bd);padding:14px 20px;display:flex;justify-content:space-between;align-items:flex-end;flex-shrink:0}
+.logo-label{font-size:7px;letter-spacing:5px;color:var(--t3);margin-bottom:5px}
+.logo{font-size:17px;font-weight:700;letter-spacing:5px;color:var(--a);line-height:1}
+.logo-sub{font-size:7px;letter-spacing:2px;color:var(--t2);margin-top:4px}
+input,textarea,select{width:100%;background:#090909;border:1px solid var(--bd);color:var(--w);padding:12px 14px;font-family:var(--font);font-size:13px;line-height:1.7;border-radius:var(--r);outline:none;transition:border-color .2s;caret-color:var(--a);-webkit-appearance:none;appearance:none}
+input:focus,textarea:focus,select:focus{border-color:var(--bd2)}
+textarea{resize:vertical}
+select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23555' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+select option{background:#111;color:var(--w)}
+.btn{display:block;width:100%;padding:12px;font-family:var(--font);font-size:9px;letter-spacing:4px;font-weight:700;cursor:pointer;border:none;border-radius:var(--r);transition:all .2s;text-align:center;-webkit-tap-highlight-color:transparent}
+.btn-primary{background:var(--a);color:#060606}
+.btn-primary:hover{background:#D4935A}
+.btn-primary:disabled{background:#151515;color:#3A3A3A;cursor:not-allowed}
+.btn-ghost{background:none;border:1px solid var(--a2);color:var(--t2)}
+.btn-ghost:hover{color:var(--a);border-color:var(--a)}
+.copy-btn{background:none;border:1px solid var(--bd2);color:var(--t2);padding:3px 10px;font-family:var(--font);font-size:8px;letter-spacing:2px;cursor:pointer;border-radius:2px;transition:all .15s;white-space:nowrap;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.copy-btn.done{border-color:var(--a);color:var(--a)}
+.icon-btn{background:none;border:1px solid var(--bd);color:var(--t3);padding:6px 10px;font-family:var(--font);font-size:7px;letter-spacing:2px;cursor:pointer;border-radius:2px;-webkit-tap-highlight-color:transparent}
+.lbl{font-size:8px;letter-spacing:3px;color:var(--t2);margin-bottom:8px;display:block}
+.block{border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px}
+.block.hi{border-color:var(--a2)}
+.block-head{background:var(--bg3);padding:7px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bd)}
+.block-label{font-size:8px;letter-spacing:3px;color:var(--t2)}
+.block.hi .block-label{color:var(--a)}
+.block-body{padding:14px;background:var(--bg2)}
+.tabs{display:flex;border-bottom:1px solid var(--bd);overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:11px 18px;font-size:8px;letter-spacing:3px;color:var(--t2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--font);flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.tab.active{color:var(--a);border-bottom-color:var(--a)}
+.main-inner{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px}
+@media(min-width:700px){.main-inner{padding:28px;max-width:860px;margin:0 auto}}
+.song-title{font-size:20px;font-weight:700;color:var(--w);letter-spacing:2px;line-height:1.3}
+@media(min-width:700px){.song-title{font-size:24px}}
+.lyric-line{line-height:2.1;font-size:13px;color:var(--t)}
+.lyric-tag{font-size:9px;letter-spacing:3px;color:var(--a);margin-top:12px;display:block}
+.kv{display:flex;gap:10px;margin-bottom:8px;font-size:12px;align-items:flex-start}
+.kv-k{color:var(--t3);font-size:8px;letter-spacing:1px;min-width:68px;flex-shrink:0;padding-top:2px}
+.kv-v{color:var(--t);line-height:1.5}.kv-v.hi{color:var(--a)}
+.inst-item{margin-bottom:10px}
+.inst-k{font-size:8px;letter-spacing:2px;color:var(--a2);margin-bottom:3px}
+.inst-v{font-size:12px;color:var(--t);line-height:1.5}
+.grid2{display:block}
+@media(min-width:700px){.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}}
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:12px}
+.dots{display:flex;gap:8px}
+.dot{width:6px;height:6px;background:var(--a);border-radius:50%;animation:pulse 1.2s ease-in-out infinite}
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+@keyframes pulse{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+.ftr{border-top:1px solid var(--bd);padding:12px 20px;display:flex;justify-content:space-between;font-size:7px;letter-spacing:2px;color:var(--t3);flex-shrink:0}
+.divider{display:flex;align-items:center;gap:12px;font-size:8px;letter-spacing:3px;color:var(--t2);margin-bottom:12px}
+.divider::after{content:'';flex:1;border-top:1px solid var(--bd)}
+.small{font-size:10px;color:var(--t2);line-height:1.6}
+.flex-between{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.err{border:1px solid #3A1A1A;background:#120606;padding:12px 14px;border-radius:var(--r);color:#B05050;font-size:11px;margin-top:12px;line-height:1.6}
+.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}
+.row-btns{display:flex;gap:10px;margin-top:8px}
+
+/* LANG BADGE */
+.lang-badge{display:inline-flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--bd);padding:4px 10px;border-radius:2px;font-size:8px;letter-spacing:2px;color:var(--t2);margin-bottom:14px}
+.lang-badge span{color:var(--a)}
+
+/* INPUT ROW */
+.input-row{display:flex;gap:10px;align-items:stretch;margin-top:10px}
+.input-row select{flex:0 0 auto;width:auto;min-width:130px;font-size:11px}
+.input-row .btn-primary{flex:1;padding:10px 16px;font-size:9px}
+</style>
+</head>
+<body>
+
+<!-- ── SETUP ─────────────────────────────────────── -->
+<div id="setup-screen" class="screen">
+  <div class="setup-wrap">
+    <div class="setup-box">
+      <div class="setup-head">
+        <div class="logo-label">MUSIC PRODUCTION ENGINE</div>
+        <div class="logo">ARR SUNO LAB</div>
+        <div class="logo-sub" style="margin-top:6px">감정 → 가사 → 스타일 → 앨범 커버</div>
+      </div>
+      <div class="setup-body">
+        <label class="lbl" for="api-input">ANTHROPIC API KEY</label>
+        <input type="password" id="api-input" placeholder="sk-ant-..." autocomplete="off" spellcheck="false"/>
+        <div class="small mt8" style="margin-bottom:4px">키는 이 기기에만 저장됩니다.</div>
+        <div class="small" style="margin-bottom:18px">
+          <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--a);text-decoration:none">console.anthropic.com ↗</a>에서 발급
+        </div>
+        <button class="btn btn-primary" onclick="saveKey()">▶&nbsp;&nbsp;ENTER LAB</button>
+      </div>
+    </div>
+  </div>
+  <div class="ftr"><span>ARR SUNO LAB © 2025</span><span>@arr_kr</span></div>
+</div>
+
+<!-- ── MAIN ──────────────────────────────────────── -->
+<div id="main-screen" class="screen">
+
+  <div class="hdr">
+    <div>
+      <div class="logo-label">MUSIC PRODUCTION ENGINE</div>
+      <div class="logo">ARR SUNO LAB</div>
+      <div class="logo-sub">감정 → 가사 → 스타일 → 앨범 커버</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+      <button class="icon-btn" onclick="resetKey()">API KEY</button>
+      <div style="font-size:7px;color:var(--t3);letter-spacing:1px">@arr_kr</div>
+    </div>
+  </div>
+
+  <div id="tabs-row" class="tabs" style="display:none">
+    <button class="tab active" data-tab="lyrics" onclick="showTab('lyrics')">LYRICS</button>
+    <button class="tab" data-tab="suno" onclick="showTab('suno')">SUNO</button>
+    <button class="tab" data-tab="album" onclick="showTab('album')">ALBUM</button>
+    <button class="tab" data-tab="details" onclick="showTab('details')">DETAILS</button>
+  </div>
+
+  <div class="main-inner">
+
+    <!-- INPUT -->
+    <div id="s-input">
+      <div class="divider">INPUT</div>
+      <textarea id="emotion-input" rows="6"
+        placeholder="Write your emotion or situation in any language...&#10;&#10;어떤 언어로든 자유롭게 적어주세요.&#10;どんな言語でも書いてください。"
+        onkeydown="handleKey(event)"></textarea>
+
+      <div class="input-row">
+        <select id="lang-select">
+          <option value="auto">🌐 Auto Detect</option>
+          <optgroup label="Asia">
+            <option value="ko">🇰🇷 Korean</option>
+            <option value="ja">🇯🇵 Japanese</option>
+            <option value="zh">🇨🇳 Chinese</option>
+          </optgroup>
+          <optgroup label="Americas">
+            <option value="en">🇺🇸 English</option>
+            <option value="es">🇪🇸 Spanish</option>
+            <option value="pt">🇧🇷 Portuguese</option>
+          </optgroup>
+          <optgroup label="Europe">
+            <option value="fr">🇫🇷 French</option>
+            <option value="de">🇩🇪 German</option>
+            <option value="it">🇮🇹 Italian</option>
+          </optgroup>
+        </select>
+        <button class="btn btn-primary" id="gen-btn" onclick="doGenerate()">▶&nbsp;GENERATE</button>
+      </div>
+
+      <div class="small mt8" style="letter-spacing:1px">⌘ / Ctrl + Enter to generate</div>
+      <div id="err-msg" class="err" style="display:none"></div>
+    </div>
+
+    <!-- LOADING -->
+    <div id="s-loading" style="display:none">
+      <div class="loading">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="font-size:9px;letter-spacing:4px;color:var(--t2)" id="loading-label">ANALYZING</div>
+        <div class="small" id="loading-sub">가사 · 스타일 · 앨범 커버 생성 중...</div>
+      </div>
+    </div>
+
+    <!-- RESULT -->
+    <div id="s-result" style="display:none">
+
+      <!-- Title + lang badge -->
+      <div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--bd)">
+        <div class="lang-badge" id="lang-badge-out">
+          LYRICS LANGUAGE: <span id="lang-badge-val">—</span>
+        </div>
+        <div class="flex-between">
+          <div id="r-title" class="song-title" style="flex:1;margin-right:12px"></div>
+          <button class="copy-btn" onclick="copyField('songTitle',this)">COPY</button>
+        </div>
+      </div>
+
+      <!-- TAB: LYRICS -->
+      <div id="tab-lyrics" class="tab-pane">
+        <div class="block">
+          <div class="block-head">
+            <span class="block-label">LYRICS</span>
+            <button class="copy-btn" onclick="copyField('lyrics',this)">COPY</button>
+          </div>
+          <div class="block-body" id="r-lyrics"></div>
+        </div>
+      </div>
+
+      <!-- TAB: SUNO -->
+      <div id="tab-suno" class="tab-pane" style="display:none">
+        <div class="block hi">
+          <div class="block-head">
+            <span class="block-label">SUNO STYLE PROMPT</span>
+            <button class="copy-btn" onclick="copyField('sunoStylePrompt',this)">COPY</button>
+          </div>
+          <div class="block-body">
+            <div id="r-suno-prompt" style="font-size:13px;color:var(--w);line-height:1.7"></div>
+          </div>
+        </div>
+        <div class="block">
+          <div class="block-head">
+            <span class="block-label">STYLES INPUT (Suno 붙여넣기용)</span>
+            <button class="copy-btn" onclick="copyField('styles',this)">COPY</button>
+          </div>
+          <div class="block-body">
+            <div id="r-styles" style="font-size:12px;line-height:1.7"></div>
+          </div>
+        </div>
+        <div class="block">
+          <div class="block-head">
+            <span class="block-label">OPTIONAL VARIATION</span>
+            <button class="copy-btn" onclick="copyField('optionalVariation',this)">COPY</button>
+          </div>
+          <div class="block-body">
+            <div id="r-variation" style="font-size:12px;color:var(--t2);line-height:1.7"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: ALBUM -->
+      <div id="tab-album" class="tab-pane" style="display:none">
+        <div class="block hi">
+          <div class="block-head">
+            <span class="block-label">ALBUM COVER IMAGE PROMPT</span>
+            <button class="copy-btn" onclick="copyField('albumCoverPrompt',this)">COPY</button>
+          </div>
+          <div class="block-body">
+            <div class="small" style="margin-bottom:10px;letter-spacing:2px">MIDJOURNEY / DALL-E / GROK / GEMINI 호환</div>
+            <div id="r-album" style="font-size:12px;color:#C0B8B0;line-height:1.9"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: DETAILS -->
+      <div id="tab-details" class="tab-pane" style="display:none">
+        <div class="grid2">
+          <div>
+            <div class="block">
+              <div class="block-head"><span class="block-label">STYLE INTERPRETATION</span></div>
+              <div class="block-body" id="r-style-interp"></div>
+            </div>
+            <div class="block">
+              <div class="block-head"><span class="block-label">ADVANCED OPTIONS</span></div>
+              <div class="block-body" id="r-adv-opts"></div>
+            </div>
+          </div>
+          <div>
+            <div class="block">
+              <div class="block-head"><span class="block-label">INSTRUMENT LOGIC</span></div>
+              <div class="block-body" id="r-inst-logic"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row-btns">
+        <button class="btn btn-ghost" id="fullpack-btn" onclick="copyFullPack()" style="flex:1">▷&nbsp;&nbsp;COPY FULL PACK</button>
+        <button class="btn btn-ghost" onclick="newSong()" style="flex:1">＋&nbsp;&nbsp;NEW SONG</button>
+      </div>
+    </div>
+
+  </div>
+  <div class="ftr"><span>ARR SUNO LAB © 2025</span><span>POWERED BY CLAUDE SONNET 4</span></div>
+</div>
+
+<script>
+// ── LANGUAGE MAP ───────────────────────────────────────────
+const LANG_MAP = {
+  auto: { label: 'Auto Detect',  instruction: 'Detect the language of the user\'s input and write lyrics naturally in THAT SAME LANGUAGE. If the input is in Korean, write Korean lyrics. If English, write English lyrics. Match the language exactly.' },
+  ko:   { label: '한국어',        instruction: 'Write all lyrics in Korean (한국어). Use natural, contemporary Korean expressions that resonate emotionally with Korean listeners.' },
+  ja:   { label: '日本語',        instruction: 'Write all lyrics in Japanese (日本語). Use natural, poetic Japanese expressions with appropriate hiragana, katakana, and kanji mix that resonates with Japanese listeners.' },
+  zh:   { label: '中文',          instruction: 'Write all lyrics in Mandarin Chinese (普通话). Use natural, emotionally resonant Chinese expressions that feel authentic and poetic.' },
+  en:   { label: 'English',      instruction: 'Write all lyrics in English. Use natural, contemporary English that feels authentic and emotionally resonant to global listeners.' },
+  es:   { label: 'Español',      instruction: 'Write all lyrics in Spanish (Español). Use natural, emotionally resonant Spanish expressions that feel authentic — either Latin American or Castilian Spanish style.' },
+  pt:   { label: 'Português',    instruction: 'Write all lyrics in Portuguese (Português). Use natural, emotionally resonant Portuguese — Brazilian or European style.' },
+  fr:   { label: 'Français',     instruction: 'Write all lyrics in French (Français). Use natural, poetic French expressions that feel authentic and emotionally resonant to Francophone listeners.' },
+  de:   { label: 'Deutsch',      instruction: 'Write all lyrics in German (Deutsch). Use natural, emotionally resonant German expressions that feel authentic to German-speaking listeners.' },
+  it:   { label: 'Italiano',     instruction: 'Write all lyrics in Italian (Italiano). Use natural, emotionally resonant Italian expressions — melodic and poetic in feel.' },
+};
+
+// ── SYSTEM PROMPT BUILDER ──────────────────────────────────
+function buildSystemPrompt(langCode) {
+  const lang = LANG_MAP[langCode] || LANG_MAP['auto'];
+  return `You are the ARR Suno Lab engine.
+Role: Take the user's emotional/situational text and generate a complete music production package.
+
+## CRITICAL OUTPUT RULE
+Output ONLY valid JSON. No markdown code blocks, no explanatory text.
+
+## LYRICS LANGUAGE RULE — HIGHEST PRIORITY
+${lang.instruction}
+The song title must also be in the same language as the lyrics.
+Suno style prompts and album cover prompts must ALWAYS remain in English regardless of lyrics language.
+
+## Music Knowledge Base
+
+Genres: Pop, K-Pop, Hip Hop, Rap, R&B, Neo Soul, Jazz, Lofi, Rock, Indie, Ballad, EDM, House, Ambient, Cinematic, Trot, Folk, Experimental, Fusion
+
+Suno prompt structure: [genre], [instruments], [bass], [drums], [texture], [bpm], [key] — 15-25 words, BPM required
+
+Instruments: piano, felt piano, rhodes, wurlitzer, electric piano, clean electric guitar, nylon guitar, jazz guitar, acoustic guitar, analog mono synth, poly synth, pad synth, electric bass, upright bass, fretless bass, synth bass, sub bass, saxophone, muted trumpet, trombone, flute
+
+Rhythm: funk groove, soul groove, lofi groove, boom bap groove, four-on-the-floor, house groove, boom bap drums, trap hi-hats, shuffle swing, brushed drums, minimal pulse
+
+Texture: tape saturation, analog warmth, vinyl crackle, hall reverb, room ambience, stereo widen, tape noise
+
+BPM: 60-80 ballad/ambient, 80-105 lofi/jazz, 90-110 neo soul/R&B, 110-130 pop/house, 130-160 trap/EDM
+
+Vocal styles: Soft female vocals, Powerful female vocals, Smooth female vocals, Deep male voice, Soulful male vocals, Raspy male vocals, Whispered vocals, Falsetto, Emotional vocal delivery, Fast rap vocals, Rapping
+
+Mood: Emotional, Romantic, Dreamy, Melancholic, Calm, Chill, Uplifting, Energetic, Groovy, Powerful, Playful, Dramatic
+
+Suno meta-tags: [Intro] [Verse] [Pre-Chorus] [Chorus] [Hook] [Bridge] [Break] [Drop] [Outro] [Final Chorus]
+
+Lyrics rules:
+- Short, rhythmic lines (natural to the target language's musical tradition)
+- Image/scene-centered expression over direct emotional statements
+- Repeat core hook line in chorus
+- Reflect contemporary music trends for the target language/market
+- Feel natural when sung — not translated, but originally composed in that language
+
+Album cover prompt rules — CRITICAL VISUAL SYSTEM (5 LAYERS):
+
+LAYER 1 — CD JEWEL CASE (MANDATORY):
+A transparent plastic CD jewel case MUST appear in EVERY image as the central compositional anchor. The disc inside reflects or contains the key scene. The case has physical wear matching the song's tone (cracks, fingerprints, stickers, analog grain). Style varies by genre: Emotional/ballad → case lying on surface, disc reflecting night scene. Satire/work → retro game cartridge style case. Fantasy/dark → ancient relic or gate-like case. Romance → case surrounded by lyrical world, disc as portal to the scene.
+
+LAYER 2 — LYRIC SCENE EXTRACTION (most important):
+Read the actual lyrics word by word. Extract 2-3 SPECIFIC objects/places that appear directly in the lyrics and build the background scene around the CD case using these. Examples: "막차" → show a real "막차 LAST BUS / 23:47 / 종로 EMPTY" bus stop sign. "편의점" → 24시 convenience store neon glow. "봄바람" → cherry blossom petals. "SNS 댓글" → floating comment bubble UIs. Also include 1-2 actual short lyric lines as floating text within the scene.
+
+LAYER 3 — CONTEXT UI OVERLAY (match the song's world):
+Add UI elements that extend the song's universe — choose the type that matches the lyrical theme:
+· Emotional/melancholic → PLAYLIST sidebar with track titles, cassette player UI (TRACK 07 / LOOPING MEMORIES), LOW BATTERY % indicator on screen corner
+· Work/struggle/satire → game RPG HUD: HP bar, EXP bar, STAMINA meter, DAILY QUEST checklist, ORDER numbers flying around
+· Social media/digital → floating Korean comment bubbles, follower/like counts, notification badges
+· Romance/nostalgic → scattered polaroid photos, handwritten notes, old radio, vintage bus ticket
+· Finance/information → live data panels (LIVE TRADE: CONNECTED, MARKET FLOW graph, user count)
+· Dark/fantasy → rune stone circles, fire ember particles, heavy chains, ancient stone carvings
+· Spring/upbeat → cafe terrace details, falling petals, warm bokeh lights
+
+LAYER 4 — EMOTIONAL ATMOSPHERE:
+Lighting quality, color palette, texture, time of day — all must visually express the song's emotional core (not just genre). Specify concretely: "dim fluorescent street lighting mixed with weak neon, desaturated palette with selective warm amber highlights, dusty analog grain texture, midnight atmosphere."
+
+LAYER 5 — TYPOGRAPHY (mandatory, exact):
+Song title text in the image — typography style must match genre: bold distressed Korean for dark/emotional, elegant serif for romantic, pixel font for game/satire, clean modern sans for pop/upbeat. Position: upper center or prominently placed. Then: "A  R  R" (spaced letters) bottom center. "@arr_kr" bottom right, small, low opacity. Optional: genre subtitle below title in parentheses like "(Acoustic Ballad)" or "- 생존 노동 RPG -".
+
+End with: negative prompt: [specific exclusions for this visual world]
+
+## Output JSON structure
+{
+  "songTitle": "Song title in lyrics language",
+  "lyricsLanguage": "Language name in English (e.g. Korean, Japanese, French)",
+  "lyrics": "Full lyrics with meta-tags, newlines as \\n",
+  "styles": "Suno style tags in English, 15-25 words, BPM included, comma-separated",
+  "advancedOptions": {"vocalGender": "vocal style in English", "weirdness": number(30-60), "styleInfluence": number(60-80), "excludeStyles": "styles to exclude"},
+  "styleInterpretation": {"emotion": "3-4 emotion keywords", "space": "spatial feel", "energy": "energy level + BPM", "texture": "texture", "function": "music function"},
+  "sunoStylePrompt": "Final Suno Style Prompt in English 15-25 words",
+  "instrumentLogic": {"core": "2 core instruments", "bass": "bass type", "rhythm": "rhythm structure", "texture": "space texture", "accent": "accent element"},
+  "optionalVariation": "Variation version style prompt in English",
+  "albumCoverPrompt": "Full album cover prompt in English. Must contain: (1) 2-3 SPECIFIC objects/scenes extracted directly from the lyrics, (2) emotional atmosphere and color palette, (3) typography: song title as bold text in image + A R R at bottom center + @arr_kr bottom right low opacity, (4) composition/style. Ending with: negative prompt: ..."
+}`;
+}
+
+// ── STATE ──────────────────────────────────────────────────
+let apiKey = localStorage.getItem('arr_api_key') || '';
+let result = null;
+
+// ── INIT ───────────────────────────────────────────────────
+(function init() {
+  if (!apiKey) { show('setup-screen'); }
+  else {
+    show('main-screen');
+    const saved = localStorage.getItem('arr_last_result');
+    if (saved) { try { result = JSON.parse(saved); renderResult(); } catch(e){} }
+  }
+  document.getElementById('api-input').addEventListener('keydown', e => { if(e.key==='Enter') saveKey(); });
+  // Restore lang preference
+  const savedLang = localStorage.getItem('arr_lang');
+  if (savedLang) document.getElementById('lang-select').value = savedLang;
+})();
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function saveKey() {
+  const v = document.getElementById('api-input').value.trim();
+  if (!v) { alert('API 키를 입력해주세요'); return; }
+  apiKey = v;
+  localStorage.setItem('arr_api_key', v);
+  show('main-screen');
+}
+function resetKey() {
+  if (!confirm('API 키를 재설정하시겠습니까?')) return;
+  localStorage.removeItem('arr_api_key');
+  apiKey = '';
+  newSong();
+  show('setup-screen');
+}
+
+// ── GENERATE ───────────────────────────────────────────────
+async function doGenerate() {
+  const input = document.getElementById('emotion-input').value.trim();
+  if (!input) return;
+  const langCode = document.getElementById('lang-select').value;
+  localStorage.setItem('arr_lang', langCode);
+
+  // Update loading text
+  const langLabel = LANG_MAP[langCode]?.label || 'Auto';
+  document.getElementById('loading-label').textContent = 'ANALYZING';
+  document.getElementById('loading-sub').textContent = `Generating lyrics in ${langLabel}...`;
+
+  setView('loading');
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        system: buildSystemPrompt(langCode),
+        messages: [{ role: 'user', content: input }]
+      })
+    });
+    if (!res.ok) {
+      const e = await res.json().catch(()=>({}));
+      throw new Error(e.error?.message || 'API error (' + res.status + ')');
+    }
+    const data = await res.json();
+    const text = data.content.map(b => b.text||'').join('');
+    result = JSON.parse(text.replace(/```json\n?|```/g,'').trim());
+    localStorage.setItem('arr_last_result', JSON.stringify(result));
+    renderResult();
+  } catch(e) {
+    setView('error', e.message);
+  }
+}
+function handleKey(e) { if (e.key==='Enter' && (e.metaKey||e.ctrlKey)) doGenerate(); }
+
+// ── VIEWS ──────────────────────────────────────────────────
+function setView(v, msg) {
+  document.getElementById('s-input').style.display   = v==='input'   ? 'block' : 'none';
+  document.getElementById('s-loading').style.display = v==='loading' ? 'block' : 'none';
+  document.getElementById('s-result').style.display  = v==='result'  ? 'block' : 'none';
+  document.getElementById('tabs-row').style.display  = v==='result'  ? 'flex'  : 'none';
+  if (v==='error') {
+    document.getElementById('s-input').style.display = 'block';
+    const el = document.getElementById('err-msg');
+    el.textContent = msg || '오류가 발생했습니다.';
+    el.style.display = 'block';
+  } else {
+    document.getElementById('err-msg').style.display = 'none';
+  }
+}
+function newSong() {
+  result = null;
+  localStorage.removeItem('arr_last_result');
+  document.getElementById('emotion-input').value = '';
+  setView('input');
+}
+function showTab(tab) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.style.display='none');
+  document.getElementById('tab-'+tab).style.display = 'block';
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab===tab));
+}
+
+// ── RENDER ─────────────────────────────────────────────────
+function renderResult() {
+  if (!result) return;
+  const r = result;
+
+  // Lang badge
+  document.getElementById('lang-badge-val').textContent = r.lyricsLanguage || '—';
+
+  // Title
+  document.getElementById('r-title').textContent = '「' + (r.songTitle||'') + '」';
+
+  // Lyrics
+  const lEl = document.getElementById('r-lyrics');
+  lEl.innerHTML = '';
+  (r.lyrics||'').split('\n').forEach((line, i) => {
+    const d = document.createElement('div');
+    if (/^\[.+\]$/.test(line.trim())) {
+      d.className = 'lyric-tag';
+      if (i > 0) d.style.marginTop = '12px';
+    } else {
+      d.className = 'lyric-line';
+    }
+    d.textContent = line;
+    lEl.appendChild(d);
+  });
+
+  document.getElementById('r-suno-prompt').textContent = r.sunoStylePrompt||'';
+  document.getElementById('r-styles').textContent      = r.styles||'';
+  document.getElementById('r-variation').textContent   = r.optionalVariation||'';
+  document.getElementById('r-album').textContent       = r.albumCoverPrompt||'';
+
+  renderKV('r-style-interp', r.styleInterpretation||{});
+  const ao = r.advancedOptions||{};
+  const aoEl = document.getElementById('r-adv-opts');
+  aoEl.innerHTML = '';
+  [['VOCAL', ao.vocalGender, true], ['WEIRDNESS', ao.weirdness], ['INFLUENCE', ao.styleInfluence], ['EXCLUDE', ao.excludeStyles]].forEach(([k,v,hi]) => aoEl.appendChild(makeKV(k, v, hi)));
+
+  const ilEl = document.getElementById('r-inst-logic');
+  ilEl.innerHTML = '';
+  Object.entries(r.instrumentLogic||{}).forEach(([k,v]) => {
+    const w = document.createElement('div');
+    w.className = 'inst-item';
+    w.innerHTML = '<div class="inst-k">'+k.toUpperCase()+'</div><div class="inst-v">'+esc(v)+'</div>';
+    ilEl.appendChild(w);
+  });
+
+  setView('result');
+  showTab('lyrics');
+}
+function renderKV(id, obj) {
+  const el = document.getElementById(id);
+  el.innerHTML = '';
+  Object.entries(obj).forEach(([k,v]) => el.appendChild(makeKV(k.toUpperCase(), v)));
+}
+function makeKV(k, v, hi) {
+  const row = document.createElement('div');
+  row.className = 'kv';
+  row.innerHTML = '<div class="kv-k">'+esc(k)+'</div><div class="kv-v'+(hi?' hi':'')+'">'+esc(String(v||''))+'</div>';
+  return row;
+}
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── COPY ───────────────────────────────────────────────────
+function copyField(field, btn) {
+  if (!result) return;
+  const val = typeof result[field]==='object' ? JSON.stringify(result[field],null,2) : String(result[field]||'');
+  copyText(val, btn);
+}
+function copyText(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    if (!btn) return;
+    const prev = btn.textContent;
+    btn.textContent = '✓ COPIED';
+    btn.classList.add('done');
+    setTimeout(() => { btn.textContent = prev; btn.classList.remove('done'); }, 2000);
+  });
+}
+function copyFullPack() {
+  if (!result) return;
+  const r = result;
+  const pack =
+`=== ARR SUNO LAB — 「${r.songTitle}」[${r.lyricsLanguage||''}] ===
+
+[LYRICS]
+${r.lyrics}
+
+[SUNO STYLE PROMPT]
+${r.sunoStylePrompt}
+
+[STYLES INPUT]
+${r.styles}
+
+[ADVANCED OPTIONS]
+Vocal Gender: ${r.advancedOptions?.vocalGender}
+Weirdness: ${r.advancedOptions?.weirdness}
+Style Influence: ${r.advancedOptions?.styleInfluence}
+Exclude: ${r.advancedOptions?.excludeStyles}
+
+[INSTRUMENT LOGIC]
+Core: ${r.instrumentLogic?.core}
+Bass: ${r.instrumentLogic?.bass}
+Rhythm: ${r.instrumentLogic?.rhythm}
+Texture: ${r.instrumentLogic?.texture}
+Accent: ${r.instrumentLogic?.accent}
+
+[OPTIONAL VARIATION]
+${r.optionalVariation}
+
+[ALBUM COVER PROMPT]
+${r.albumCoverPrompt}`;
+  copyText(pack, document.getElementById('fullpack-btn'));
+}
+</script>
+</body>
+</html>
