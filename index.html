@@ -295,6 +295,17 @@ select option{background:#111;color:var(--w)}
   color:var(--t);padding:4px 10px;border-radius:2px;
   font-size:var(--fs-copy-btn);letter-spacing:1px;margin:3px 3px 3px 0
 }
+
+.social-field-label{font-size:9px;letter-spacing:2px;color:var(--a2);margin-bottom:4px}
+.scene-item{font-size:var(--fs-small);color:var(--t);font-family:var(--font-kr);padding:3px 0;line-height:1.6}
+.scene-item::before{content:'·';color:var(--a2);margin-right:8px}
+.hashtag-group{margin-bottom:12px}
+.hashtag-group-label{font-size:8px;letter-spacing:2px;color:var(--t3);margin-bottom:6px}
+.hashtag-line{font-size:var(--fs-small);color:var(--a);font-family:var(--font-kr);line-height:1.9;word-break:break-all}
+.thumb-item{font-size:var(--fs-kv-v);color:var(--w);font-family:var(--font-kr);padding:6px 0;border-bottom:1px solid var(--bd);line-height:1.5}
+.thumb-item:last-child{border-bottom:none}
+.thumb-item::before{content:'"';color:var(--a2)}
+.thumb-item::after{content:'"';color:var(--a2)}
 </style>
 </head>
 <body>
@@ -346,6 +357,7 @@ select option{background:#111;color:var(--w)}
     <button class="tab active" data-tab="lyrics" onclick="showTab('lyrics')">LYRICS</button>
     <button class="tab" data-tab="suno" onclick="showTab('suno')">SUNO</button>
     <button class="tab" data-tab="album" onclick="showTab('album')">ALBUM</button>
+    <button class="tab" data-tab="social" onclick="showTab('social')">SOCIAL</button>
     <button class="tab" data-tab="details" onclick="showTab('details')">DETAILS</button>
   </div>
 
@@ -463,6 +475,100 @@ select option{background:#111;color:var(--w)}
         </div>
       </div>
 
+
+      <!-- TAB: SOCIAL -->
+      <div id="tab-social" class="tab-pane" style="display:none">
+
+        <!-- 곡 정체성 -->
+        <div class="block hi" style="margin-bottom:14px">
+          <div class="block-head">
+            <span class="block-label">곡 정체성 — SONG IDENTITY</span>
+          </div>
+          <div class="block-body">
+            <div id="r-avoid-tone" style="font-size:11px;color:#B05050;letter-spacing:1px;margin-bottom:10px;padding:6px 10px;border:1px solid #3A1A1A;border-radius:2px;background:#120606"></div>
+            <div id="r-core-sentence" style="font-size:var(--fs-lyric);color:var(--w);font-family:var(--font-kr);line-height:1.7;padding:10px 0;border-bottom:1px solid var(--bd);margin-bottom:10px"></div>
+            <div id="r-real-emotion" style="font-size:var(--fs-small);color:var(--t2);line-height:1.6"></div>
+          </div>
+        </div>
+
+        <!-- 플랫폼 카드 그리드 -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+
+          <!-- YouTube -->
+          <div class="block" style="grid-column:1/-1">
+            <div class="block-head">
+              <span class="block-label">▶ YOUTUBE — 공감 서사형</span>
+              <button class="copy-btn" onclick="copySocial('youtube',this)">COPY</button>
+            </div>
+            <div class="block-body">
+              <div style="font-size:9px;letter-spacing:2px;color:var(--a2);margin-bottom:6px">TITLE</div>
+              <div id="r-yt-title" style="font-size:var(--fs-kv-v);color:var(--w);font-family:var(--font-kr);margin-bottom:12px;line-height:1.5"></div>
+              <div style="font-size:9px;letter-spacing:2px;color:var(--a2);margin-bottom:6px">DESCRIPTION</div>
+              <div id="r-yt-desc" style="font-size:var(--fs-small);color:var(--t);font-family:var(--font-kr);line-height:2;white-space:pre-line"></div>
+            </div>
+          </div>
+
+          <!-- TikTok -->
+          <div class="block">
+            <div class="block-head">
+              <span class="block-label">♪ TIKTOK — 2초 훅</span>
+              <button class="copy-btn" onclick="copySocial('tiktok',this)">COPY</button>
+            </div>
+            <div class="block-body">
+              <div class="social-field-label">시작 자막</div>
+              <div id="r-tt-hook" style="font-size:var(--fs-kv-v);color:var(--w);font-family:var(--font-kr);margin-bottom:10px;font-weight:700"></div>
+              <div class="social-field-label">추천 장면</div>
+              <div id="r-tt-scenes" style="margin-bottom:10px"></div>
+              <div class="social-field-label">마지막 자막</div>
+              <div id="r-tt-closing" style="font-size:var(--fs-small);color:var(--t);font-family:var(--font-kr);margin-bottom:10px"></div>
+              <div class="social-field-label">해시태그</div>
+              <div id="r-tt-tags" style="font-size:var(--fs-small);color:var(--a);font-family:var(--font-kr);line-height:1.8"></div>
+            </div>
+          </div>
+
+          <!-- Threads -->
+          <div class="block">
+            <div class="block-head">
+              <span class="block-label">✦ THREADS — 고백형</span>
+              <button class="copy-btn" onclick="copySocial('threads',this)">COPY</button>
+            </div>
+            <div class="block-body">
+              <div id="r-threads" style="font-size:var(--fs-small);color:var(--t);font-family:var(--font-kr);line-height:2.1;white-space:pre-line"></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- X + 썸네일 -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+          <div class="block">
+            <div class="block-head">
+              <span class="block-label">✕ X (TWITTER) — 공감형</span>
+              <button class="copy-btn" onclick="copySocial('twitter',this)">COPY</button>
+            </div>
+            <div class="block-body">
+              <div id="r-twitter" style="font-size:var(--fs-kv-v);color:var(--t);font-family:var(--font-kr);line-height:2;white-space:pre-line"></div>
+            </div>
+          </div>
+          <div class="block">
+            <div class="block-head">
+              <span class="block-label">◎ 썸네일 문구</span>
+              <button class="copy-btn" onclick="copySocial('thumbnail',this)">COPY</button>
+            </div>
+            <div class="block-body" id="r-thumbnail"></div>
+          </div>
+        </div>
+
+        <!-- 통합 해시태그 -->
+        <div class="block hi">
+          <div class="block-head">
+            <span class="block-label">📌 통합 해시태그</span>
+            <button class="copy-btn" onclick="copySocial('allHashtags',this)">COPY ALL</button>
+          </div>
+          <div class="block-body" id="r-hashtags"></div>
+        </div>
+
+      </div>
       <!-- TAB: DETAILS -->
       <div id="tab-details" class="tab-pane" style="display:none">
 
@@ -597,6 +703,23 @@ Song title text in the image — typography style must match genre: bold distres
 
 End with: negative prompt: [specific exclusions for this visual world]
 
+## Social Content Rules — Platform Strategy
+
+STEP 1: Song Identity Analysis (Paradoxical Connection):
+Identify the REAL emotional state, not the surface genre.
+- realEmotion: 2-3 keywords capturing true emotional state
+- avoidTone: tone that would KILL the content + reason why
+- coreSentence: paradoxical truth formula = [opposite of surface emotion] + [real state]
+  Example: "꿈을 포기한 게 아니라, 너무 오래 버티느라 잠시 잊어버린 상태"
+
+STEP 2: Platform Content:
+YouTube (공감 서사형): Title = "곡명 | 상황묘사 (장르)". Description = 3-4 para empathy story, no forced hope, end with 🎵 + 5 hashtags.
+TikTok (2초 훅): hook = 2-word reality punch → next line reversal. 4 specific visual scenes. closingLine = quiet acceptance, no resolution.
+Threads (고백형): 4-6 short paragraphs confession style. Universal enough to screenshot/save. End with reader question.
+X/Twitter: 2-3 lines max. No hashtags in body. Last line has 🎵 곡명.
+Thumbnail: 3-4 punchy lyric phrases.
+Hashtags: 5 categories — reach / reality / mood / genre / phrase(lyric-based).
+
 ## Output JSON structure
 {
   "songTitle": "Song title in lyrics language",
@@ -608,7 +731,34 @@ End with: negative prompt: [specific exclusions for this visual world]
   "sunoStylePrompt": "Final Suno Style Prompt in English 15-25 words",
   "instrumentLogic": {"core": "2 core instruments", "bass": "bass type", "rhythm": "rhythm structure", "texture": "space texture", "accent": "accent element"},
   "optionalVariation": "Variation version style prompt in English",
-  "albumCoverPrompt": "Full album cover prompt in English. Must contain: (1) 2-3 SPECIFIC objects/scenes extracted directly from the lyrics, (2) emotional atmosphere and color palette, (3) typography: song title as bold text in image + A R R at bottom center + @arr_kr bottom right low opacity, (4) composition/style. Ending with: negative prompt: ..."
+  "albumCoverPrompt": "Full album cover prompt in English. Must contain: (1) 2-3 SPECIFIC objects/scenes extracted directly from the lyrics, (2) emotional atmosphere and color palette, (3) typography: song title as bold text in image + A R R at bottom center + @arr_kr bottom right low opacity, (4) composition/style. Ending with: negative prompt: ...",
+  "socialContent": {
+    "songIdentity": {
+      "realEmotion": "핵심 정서 (2-3 키워드, 예: 현실 피로 + 정체성 흐림 + 작은 희망)",
+      "avoidTone": "이 톤으로 가면 망한다: 구체적 이유",
+      "coreSentence": "역설적 연결로 잡은 곡의 핵심 한 문장"
+    },
+    "youtube": {
+      "title": "곡명 | 상황 묘사 (장르)",
+      "description": "3-4문단 공감 서사. 희망 강요 없이. 마지막에 곡명 이모지 + 해시태그 5개"
+    },
+    "tiktok": {
+      "hook": "2초 현실 공감 자막",
+      "scenes": ["추천 장면1", "추천 장면2", "추천 장면3", "추천 장면4"],
+      "closingLine": "마지막 자막 — 조용한 수용",
+      "hashtags": ["#tag1", "#tag2", "#tag3", "#tag4", "#tag5", "#tag6"]
+    },
+    "threads": "Threads 포스트 전문. 고백형, 4-6 짧은 문단, 마지막에 독자 질문 1개",
+    "twitter": "X 포스트 전문. 2-3줄, 해시태그 없이, 마지막 줄에 곡명",
+    "thumbnailTexts": ["썸네일 문구1", "썸네일 문구2", "썸네일 문구3"],
+    "hashtags": {
+      "reach": ["#fyp", "#추천", "#viral", "#music", "#newmusic"],
+      "reality": ["현실 관련 태그들"],
+      "mood": ["감성 분위기 태그들"],
+      "genre": ["장르 태그들"],
+      "phrase": ["가사 문장형 태그들"]
+    }
+  }
 }`;
 }
 
@@ -797,6 +947,81 @@ function renderResult() {
     dmEl.appendChild(chip);
   });
 
+  // ── SOCIAL CONTENT ──────────────────────────────────────
+  const sc = r.socialContent || {};
+  const si = sc.songIdentity || {};
+
+  // Song Identity
+  const avoidEl = document.getElementById('r-avoid-tone');
+  if (avoidEl) avoidEl.textContent = si.avoidTone ? '⚠ ' + si.avoidTone : '';
+  const coreEl = document.getElementById('r-core-sentence');
+  if (coreEl) coreEl.textContent = '"' + (si.coreSentence || '—') + '"';
+  const emotionEl = document.getElementById('r-real-emotion');
+  if (emotionEl) emotionEl.textContent = '핵심 정서: ' + (si.realEmotion || '—');
+
+  // YouTube
+  const yt = sc.youtube || {};
+  const ytTitle = document.getElementById('r-yt-title');
+  if (ytTitle) ytTitle.textContent = yt.title || '';
+  const ytDesc = document.getElementById('r-yt-desc');
+  if (ytDesc) ytDesc.textContent = yt.description || '';
+
+  // TikTok
+  const tt = sc.tiktok || {};
+  const ttHook = document.getElementById('r-tt-hook');
+  if (ttHook) ttHook.textContent = tt.hook || '';
+  const ttScenes = document.getElementById('r-tt-scenes');
+  if (ttScenes) {
+    ttScenes.innerHTML = '';
+    (tt.scenes || []).forEach(s => {
+      const d = document.createElement('div');
+      d.className = 'scene-item';
+      d.textContent = s;
+      ttScenes.appendChild(d);
+    });
+  }
+  const ttClose = document.getElementById('r-tt-closing');
+  if (ttClose) ttClose.textContent = tt.closingLine || '';
+  const ttTags = document.getElementById('r-tt-tags');
+  if (ttTags) ttTags.textContent = (tt.hashtags || []).join(' ');
+
+  // Threads
+  const thrEl = document.getElementById('r-threads');
+  if (thrEl) thrEl.textContent = sc.threads || '';
+
+  // Twitter
+  const twEl = document.getElementById('r-twitter');
+  if (twEl) twEl.textContent = sc.twitter || '';
+
+  // Thumbnail
+  const thumbEl = document.getElementById('r-thumbnail');
+  if (thumbEl) {
+    thumbEl.innerHTML = '';
+    (sc.thumbnailTexts || []).forEach(t => {
+      const d = document.createElement('div');
+      d.className = 'thumb-item';
+      d.textContent = t;
+      thumbEl.appendChild(d);
+    });
+  }
+
+  // Hashtags
+  const htEl = document.getElementById('r-hashtags');
+  if (htEl) {
+    htEl.innerHTML = '';
+    const ht = sc.hashtags || {};
+    const htLabels = {reach:'🔥 도달 확장', reality:'🏙 현실 공감', mood:'🌙 감성 분위기', genre:'🎵 장르', phrase:'💬 문장형'};
+    Object.entries(htLabels).forEach(([key, label]) => {
+      const tags = ht[key] || [];
+      if (!tags.length) return;
+      const group = document.createElement('div');
+      group.className = 'hashtag-group';
+      group.innerHTML = '<div class="hashtag-group-label">' + label + '</div>' +
+        '<div class="hashtag-line">' + tags.map(t => esc(t)).join(' ') + '</div>';
+      htEl.appendChild(group);
+    });
+  }
+
   setView('result');
   showTab('lyrics');
   saveToHistory(r);
@@ -959,6 +1184,35 @@ function copyField(field, btn) {
   if (!result) return;
   const val = typeof result[field]==='object' ? JSON.stringify(result[field],null,2) : String(result[field]||'');
   copyText(val, btn);
+}
+
+// ── SOCIAL COPY ───────────────────────────────────────────
+function copySocial(field, btn) {
+  if (!result || !result.socialContent) return;
+  const sc = result.socialContent;
+  const tt = sc.tiktok || {};
+  const ht = sc.hashtags || {};
+  let text = '';
+
+  if (field === 'youtube') {
+    text = (sc.youtube?.title || '') + '\n\n' + (sc.youtube?.description || '');
+  } else if (field === 'tiktok') {
+    text = '시작: ' + (tt.hook || '') + '\n\n추천 장면:\n' +
+      (tt.scenes || []).map(s => '· ' + s).join('\n') +
+      '\n\n마지막: ' + (tt.closingLine || '') +
+      '\n\n' + (tt.hashtags || []).join(' ');
+  } else if (field === 'threads') {
+    text = sc.threads || '';
+  } else if (field === 'twitter') {
+    text = sc.twitter || '';
+  } else if (field === 'thumbnail') {
+    text = (sc.thumbnailTexts || []).map(t => '"' + t + '"').join('\n');
+  } else if (field === 'allHashtags') {
+    const all = [...(ht.reach||[]), ...(ht.reality||[]), ...(ht.mood||[]), ...(ht.genre||[]), ...(ht.phrase||[])];
+    text = all.join(' ');
+  }
+
+  if (text) copyText(text, btn);
 }
 function copyText(text, btn) {
   navigator.clipboard.writeText(text).then(() => {
