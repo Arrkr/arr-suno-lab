@@ -220,6 +220,62 @@ select option{background:#111;color:var(--w)}
 .err{border:1px solid #3A1A1A;background:#120606;padding:14px 16px;border-radius:var(--r);color:#B05050;font-size:var(--fs-small);margin-top:12px;line-height:1.7}
 .mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}
 .row-btns{display:flex;gap:10px;margin-top:10px}
+
+/* ── HISTORY PANEL ── */
+.history-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;display:none;backdrop-filter:blur(2px)}
+.history-panel{
+  position:fixed;top:0;right:0;height:100vh;height:100dvh;
+  width:min(380px,100vw);background:var(--bg2);
+  border-left:1px solid var(--bd);z-index:101;
+  display:none;flex-direction:column;
+  transform:translateX(100%);transition:transform .25s ease
+}
+.history-panel.open{transform:translateX(0)}
+.history-head{
+  background:var(--bg3);padding:16px 20px;
+  border-bottom:1px solid var(--bd);
+  display:flex;justify-content:space-between;align-items:center;
+  flex-shrink:0
+}
+.history-head-title{font-size:var(--fs-block-label);letter-spacing:3px;color:var(--a)}
+.history-close{
+  background:none;border:none;color:var(--t2);font-size:20px;
+  cursor:pointer;padding:4px 8px;line-height:1;font-family:var(--font)
+}
+.history-list{flex:1;overflow-y:auto;padding:12px}
+.history-empty{padding:40px 20px;text-align:center;font-size:var(--fs-small);color:var(--t3)}
+.history-item{
+  border:1px solid var(--bd);border-radius:var(--r);
+  margin-bottom:10px;overflow:hidden;background:var(--bg)
+}
+.history-item-head{
+  padding:12px 14px;display:flex;justify-content:space-between;
+  align-items:flex-start;gap:10px
+}
+.history-item-title{
+  font-size:15px;color:var(--w);font-family:var(--font-kr);
+  line-height:1.3;flex:1
+}
+.history-item-meta{
+  font-size:9px;color:var(--t3);letter-spacing:1px;
+  margin-top:4px;line-height:1.6
+}
+.history-item-actions{
+  display:flex;gap:6px;padding:0 14px 12px;
+}
+.h-btn{
+  background:none;border:1px solid var(--bd2);color:var(--t2);
+  padding:5px 12px;font-family:var(--font);font-size:9px;
+  letter-spacing:2px;cursor:pointer;border-radius:2px;
+  transition:all .15s;flex:1;text-align:center
+}
+.h-btn:hover{color:var(--a);border-color:var(--a)}
+.h-btn.del:hover{color:#B05050;border-color:#3A1A1A}
+.h-count{
+  background:var(--a2);color:var(--a);
+  font-size:9px;padding:1px 6px;border-radius:2px;
+  letter-spacing:1px;margin-left:6px
+}
 </style>
 </head>
 <body>
@@ -257,8 +313,13 @@ select option{background:#111;color:var(--w)}
       <div class="logo-sub">감정 → 가사 → 스타일 → 앨범 커버</div>
     </div>
     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
-      <button class="icon-btn" onclick="resetKey()">API KEY</button>
-      <div style="font-size:7px;color:var(--t3);letter-spacing:1px">@arr_kr</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="icon-btn" onclick="toggleHistory()" id="hist-btn">
+          HISTORY<span class="h-count" id="hist-count" style="display:none">0</span>
+        </button>
+        <button class="icon-btn" onclick="resetKey()">API KEY</button>
+      </div>
+      <div style="font-size:7px;color:var(--t3);letter-spacing:1px;margin-top:6px">@arr_kr</div>
     </div>
   </div>
 
@@ -406,8 +467,9 @@ select option{background:#111;color:var(--w)}
       </div>
 
       <div class="row-btns">
-        <button class="btn btn-ghost" id="fullpack-btn" onclick="copyFullPack()" style="flex:1">▷&nbsp;&nbsp;COPY FULL PACK</button>
-        <button class="btn btn-ghost" onclick="newSong()" style="flex:1">＋&nbsp;&nbsp;NEW SONG</button>
+        <button class="btn btn-ghost" id="fullpack-btn" onclick="copyFullPack()" style="flex:1">▷&nbsp;COPY</button>
+        <button class="btn btn-ghost" onclick="downloadTxt()" style="flex:1">↓&nbsp;SAVE .TXT</button>
+        <button class="btn btn-ghost" onclick="newSong()" style="flex:1">＋&nbsp;NEW</button>
       </div>
     </div>
 
@@ -523,6 +585,7 @@ let result = null;
     show('main-screen');
     const saved = localStorage.getItem('arr_last_result');
     if (saved) { try { result = JSON.parse(saved); renderResult(); } catch(e){} }
+    updateHistCount();
   }
   document.getElementById('api-input').addEventListener('keydown', e => { if(e.key==='Enter') saveKey(); });
   // Restore lang preference
@@ -669,6 +732,7 @@ function renderResult() {
 
   setView('result');
   showTab('lyrics');
+  saveToHistory(r);
 }
 function renderKV(id, obj) {
   const el = document.getElementById(id);
@@ -683,26 +747,97 @@ function makeKV(k, v, hi) {
 }
 function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-// ── COPY ───────────────────────────────────────────────────
-function copyField(field, btn) {
-  if (!result) return;
-  const val = typeof result[field]==='object' ? JSON.stringify(result[field],null,2) : String(result[field]||'');
-  copyText(val, btn);
-}
-function copyText(text, btn) {
-  navigator.clipboard.writeText(text).then(() => {
-    if (!btn) return;
-    const prev = btn.textContent;
-    btn.textContent = '✓ COPIED';
-    btn.classList.add('done');
-    setTimeout(() => { btn.textContent = prev; btn.classList.remove('done'); }, 2000);
+
+// ── HISTORY ───────────────────────────────────────────────
+const HIST_KEY = 'arr_history';
+const HIST_MAX = 20;
+
+function saveToHistory(r) {
+  const hist = getHistory();
+  hist.unshift({
+    id: Date.now(),
+    ts: new Date().toLocaleString('ko-KR', {month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}),
+    songTitle: r.songTitle || '제목 없음',
+    lyricsLanguage: r.lyricsLanguage || '',
+    result: r
   });
+  if (hist.length > HIST_MAX) hist.splice(HIST_MAX);
+  localStorage.setItem(HIST_KEY, JSON.stringify(hist));
+  updateHistCount();
 }
-function copyFullPack() {
-  if (!result) return;
-  const r = result;
-  const pack =
-`=== ARR SUNO LAB — 「${r.songTitle}」[${r.lyricsLanguage||''}] ===
+
+function getHistory() {
+  try { return JSON.parse(localStorage.getItem(HIST_KEY) || '[]'); }
+  catch(e) { return []; }
+}
+
+function updateHistCount() {
+  const hist = getHistory();
+  const cnt = hist.length;
+  const el = document.getElementById('hist-count');
+  if (cnt > 0) { el.textContent = cnt; el.style.display = ''; }
+  else { el.style.display = 'none'; }
+}
+
+function toggleHistory() {
+  const panel = document.getElementById('history-panel');
+  const overlay = document.getElementById('history-overlay');
+  const isOpen = panel.classList.contains('open');
+  if (isOpen) {
+    panel.classList.remove('open');
+    setTimeout(() => { panel.style.display = 'none'; overlay.style.display = 'none'; }, 250);
+  } else {
+    panel.style.display = 'flex';
+    overlay.style.display = 'block';
+    setTimeout(() => panel.classList.add('open'), 10);
+    renderHistoryList();
+  }
+}
+
+function renderHistoryList() {
+  const hist = getHistory();
+  const el = document.getElementById('history-list');
+  if (hist.length === 0) {
+    el.innerHTML = '<div class="history-empty">아직 생성된 곡이 없습니다.</div>';
+    return;
+  }
+  el.innerHTML = hist.map((item, i) => `
+    <div class="history-item" id="hitem-${item.id}">
+      <div class="history-item-head">
+        <div style="flex:1">
+          <div class="history-item-title">「${esc(item.songTitle)}」</div>
+          <div class="history-item-meta">${esc(item.lyricsLanguage || '')} &nbsp;·&nbsp; ${esc(item.ts)}</div>
+        </div>
+      </div>
+      <div class="history-item-actions">
+        <button class="h-btn" onclick="loadFromHistory(${i})">LOAD</button>
+        <button class="h-btn" onclick="downloadHistTxt(${i})">↓ TXT</button>
+        <button class="h-btn del" onclick="deleteHistory(${item.id})">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function loadFromHistory(idx) {
+  const hist = getHistory();
+  if (!hist[idx]) return;
+  result = hist[idx].result;
+  renderResult();
+  toggleHistory();
+}
+
+function deleteHistory(id) {
+  let hist = getHistory();
+  hist = hist.filter(h => h.id !== id);
+  localStorage.setItem(HIST_KEY, JSON.stringify(hist));
+  updateHistCount();
+  renderHistoryList();
+}
+
+// ── DOWNLOAD TXT ──────────────────────────────────────────
+function buildPackText(r) {
+  return `=== ARR SUNO LAB — 「${r.songTitle}」[${r.lyricsLanguage||''}] ===
+생성일시: ${new Date().toLocaleString('ko-KR')}
 
 [LYRICS]
 ${r.lyrics}
@@ -731,8 +866,64 @@ ${r.optionalVariation}
 
 [ALBUM COVER PROMPT]
 ${r.albumCoverPrompt}`;
-  copyText(pack, document.getElementById('fullpack-btn'));
+}
+
+function downloadTxt() {
+  if (!result) return;
+  triggerDownload(buildPackText(result), `ARR_${result.songTitle||'song'}.txt`);
+}
+
+function downloadHistTxt(idx) {
+  const hist = getHistory();
+  if (!hist[idx]) return;
+  triggerDownload(buildPackText(hist[idx].result), `ARR_${hist[idx].songTitle||'song'}.txt`);
+}
+
+function triggerDownload(text, filename) {
+  const blob = new Blob([text], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+// ── COPY ───────────────────────────────────────────────────
+function copyField(field, btn) {
+  if (!result) return;
+  const val = typeof result[field]==='object' ? JSON.stringify(result[field],null,2) : String(result[field]||'');
+  copyText(val, btn);
+}
+function copyText(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    if (!btn) return;
+    const prev = btn.textContent;
+    btn.textContent = '✓ COPIED';
+    btn.classList.add('done');
+    setTimeout(() => { btn.textContent = prev; btn.classList.remove('done'); }, 2000);
+  });
+}
+function copyFullPack() {
+  if (!result) return;
+  copyText(buildPackText(result), document.getElementById('fullpack-btn'));
 }
 </script>
+
+<!-- ── HISTORY OVERLAY ── -->
+<div id="history-overlay" class="history-overlay" onclick="toggleHistory()"></div>
+
+<!-- ── HISTORY PANEL ── -->
+<div id="history-panel" class="history-panel">
+  <div class="history-head">
+    <div>
+      <span class="history-head-title">SONG HISTORY</span>
+      <span style="font-size:9px;color:var(--t3);letter-spacing:1px;margin-left:8px">최근 20곡 자동저장</span>
+    </div>
+    <button class="history-close" onclick="toggleHistory()">×</button>
+  </div>
+  <div class="history-list" id="history-list">
+    <div class="history-empty">아직 생성된 곡이 없습니다.</div>
+  </div>
+</div>
+
 </body>
 </html>
