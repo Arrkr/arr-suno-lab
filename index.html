@@ -276,6 +276,25 @@ select option{background:#111;color:var(--w)}
   font-size:9px;padding:1px 6px;border-radius:2px;
   letter-spacing:1px;margin-left:6px
 }
+
+.density-chip{
+  display:flex;flex-direction:column;align-items:center;
+  background:var(--bg3);border:1px solid var(--bd);
+  border-radius:3px;padding:8px 12px;min-width:80px;flex:1;
+  text-align:center
+}
+.density-chip.sparse{border-color:#2A3A2A}
+.density-chip.medium{border-color:#3A3A2A}
+.density-chip.dense{border-color:#3A2A1A;border-color:var(--a2)}
+.density-chip.explosion{border-color:var(--a);background:#1A0F08}
+.density-section{font-size:8px;letter-spacing:2px;color:var(--t3);margin-bottom:4px}
+.density-level{font-size:11px;color:var(--t);letter-spacing:1px}
+.density-chip.explosion .density-level{color:var(--a)}
+.vocal-tag{
+  display:inline-block;background:var(--bg3);border:1px solid var(--bd2);
+  color:var(--t);padding:4px 10px;border-radius:2px;
+  font-size:var(--fs-copy-btn);letter-spacing:1px;margin:3px 3px 3px 0
+}
 </style>
 </head>
 <body>
@@ -446,6 +465,25 @@ select option{background:#111;color:var(--w)}
 
       <!-- TAB: DETAILS -->
       <div id="tab-details" class="tab-pane" style="display:none">
+
+        <!-- Emotional Scene + Vocal Direction (상단 강조 행) -->
+        <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap">
+          <div class="block hi" style="flex:1;min-width:200px;margin-bottom:0">
+            <div class="block-head"><span class="block-label">EMOTIONAL SCENE</span></div>
+            <div class="block-body" id="r-emotional-scene" style="font-size:var(--fs-kv-v);color:var(--w);line-height:1.6"></div>
+          </div>
+          <div class="block" style="flex:1;min-width:200px;margin-bottom:0">
+            <div class="block-head"><span class="block-label">VOCAL DIRECTION</span></div>
+            <div class="block-body" id="r-vocal-dir"></div>
+          </div>
+        </div>
+
+        <!-- Density Map (전체 너비) -->
+        <div class="block" style="margin-bottom:12px">
+          <div class="block-head"><span class="block-label">ARRANGEMENT DENSITY MAP</span></div>
+          <div class="block-body" id="r-density-map" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+        </div>
+
         <div class="grid2">
           <div>
             <div class="block">
@@ -728,6 +766,35 @@ function renderResult() {
     w.className = 'inst-item';
     w.innerHTML = '<div class="inst-k">'+k.toUpperCase()+'</div><div class="inst-v">'+esc(v)+'</div>';
     ilEl.appendChild(w);
+  });
+
+  // Emotional Scene
+  const esEl = document.getElementById('r-emotional-scene');
+  esEl.textContent = r.emotionalSceneTag || '—';
+
+  // Vocal Direction
+  const vdEl = document.getElementById('r-vocal-dir');
+  vdEl.innerHTML = '';
+  (Array.isArray(r.vocalDirection) ? r.vocalDirection : [r.vocalDirection||'']).forEach(v => {
+    if (!v) return;
+    const tag = document.createElement('span');
+    tag.className = 'vocal-tag';
+    tag.textContent = v;
+    vdEl.appendChild(tag);
+  });
+
+  // Density Map
+  const dmEl = document.getElementById('r-density-map');
+  dmEl.innerHTML = '';
+  const dm = r.arrangementDensityMap || {};
+  const dmLabels = {intro:'INTRO',verse:'VERSE',preChorus:'PRE',chorus:'CHORUS',finalChorus:'FINAL'};
+  Object.entries(dmLabels).forEach(([key, label]) => {
+    const val = dm[key] || '—';
+    const cls = val.toLowerCase().replace(' ','').replace('/','') || 'medium';
+    const chip = document.createElement('div');
+    chip.className = 'density-chip ' + (cls.includes('explosion') ? 'explosion' : cls.includes('dense') ? 'dense' : cls.includes('medium') ? 'medium' : 'sparse');
+    chip.innerHTML = '<div class="density-section">' + label + '</div><div class="density-level">' + esc(val) + '</div>';
+    dmEl.appendChild(chip);
   });
 
   setView('result');
